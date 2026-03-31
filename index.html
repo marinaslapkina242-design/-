@@ -3,85 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Пример готового HTML-сайта">
-    <title>Мой сайт</title>
+    <title>Мир цитрусовых</title>
     <style>
-        /* Сброс отступов */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            background-color: #fff8e7;
             color: #333;
         }
         header {
-            background: #0078d7;
-            color: #fff;
-            padding: 1rem 0;
+            background-color: #ffa500;
+            color: white;
+            padding: 20px;
             text-align: center;
         }
         nav {
-            background: #005a9e;
-            padding: 0.5rem;
+            background-color: #ffcc66;
+            padding: 10px;
             text-align: center;
         }
         nav a {
-            color: #fff;
-            margin: 0 10px;
+            color: #333;
             text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
         }
         nav a:hover {
-            text-decoration: underline;
+            color: #d35400;
         }
         main {
-            padding: 1rem;
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
-            background: #fff;
-            border-radius: 5px;
+            padding: 20px;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
         footer {
+            background-color: #ffa500;
+            color: white;
             text-align: center;
-            padding: 1rem;
-            background: #0078d7;
-            color: #fff;
-            margin-top: 1rem;
+            padding: 15px;
+        }
+        @media (max-width: 600px) {
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Добро пожаловать на мой сайт</h1>
-        <p>Пример готового HTML-шаблона</p>
-    </header>
+<header>
+    <h1>Мир цитрусовых</h1>
+    <p>Апельсины, лимоны, лаймы и многое другое</p>
+</header>
 
-    <nav>
-        <a href="#">Главная</a>
-        <a href="#">О нас</a>
-        <a href="#">Услуги</a>
-        <a href="#">Контакты</a>
-    </nav>
+<nav>
+    <a href="#oranges">Апельсины</a>
+    <a href="#lemons">Лимоны</a>
+    <a href="#limes">Лаймы</a>
+</nav>
 
-    <main>
-        <h2>О проекте</h2>
-        <p>Это пример простого HTML-сайта с встроенными стилями. Вы можете изменить текст, цвета и структуру под свои нужды.</p>
+<main>
+    <section id="oranges">
+        <h2>Апельсины</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Orange-Fruit-Pieces.jpg" alt="Апельсины">
+        <p>Апельсины — сочные и сладкие цитрусовые, богатые витамином C. Они укрепляют иммунитет и улучшают настроение.</p>
+    </section>
 
-        <h2>Преимущества</h2>
-        <ul>
-            <li>Адаптивный дизайн</li>
-            <li>Простая структура</li>
-            <li>Легко редактировать</li>
-        </ul>
-    </main>
+    <section id="lemons">
+        <h2>Лимоны</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Lemon.jpg" alt="Лимоны">
+        <p>Лимоны известны своим кислым вкусом и освежающим ароматом. Их часто используют в кулинарии и напитках.</p>
+    </section>
 
-    <footer>
-        <p>&copy; 2026 Мой сайт. Все права защищены.</p>
-    </footer>
+    <section id="limes">
+        <h2>Лаймы</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Limes.jpg" alt="Лаймы">
+        <p>Лаймы — маленькие зелёные цитрусовые с ярким вкусом. Отлично подходят для коктейлей и маринадов.</p>
+    </section>
+</main>
+
+<footer>
+    &copy; 2026 Мир цитрусовых
+</footer>
 
 </body>
 </html>
