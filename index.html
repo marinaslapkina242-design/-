@@ -1,100 +1,164 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мир цитрусовых</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #fff8e7;
-            color: #333;
-        }
-        header {
-            background-color: #ffa500;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #ffcc66;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #333;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        nav a:hover {
-            color: #d35400;
-        }
-        main {
-            max-width: 1000px;
-            margin: auto;
-            padding: 20px;
-        }
-        section {
-            margin-bottom: 40px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        footer {
-            background-color: #ffa500;
-            color: white;
-            text-align: center;
-            padding: 15px;
-        }
-        @media (max-width: 600px) {
-            nav a {
-                display: block;
-                margin: 10px 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мир цитрусовых</title>
+<style>
+    /* Общие стили */
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #fff8e7, #ffe5b4);
+        color: #333;
+        line-height: 1.6;
+    }
+    header {
+        background: linear-gradient(90deg, #ffa500, #ff7f50);
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+    header h1 {
+        font-size: 2.5em;
+        margin: 0;
+    }
+    nav {
+        background: #ffcc66;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+    nav a {
+        color: #333;
+        text-decoration: none;
+        margin: 8px 15px;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+    nav a:hover {
+        color: #d35400;
+    }
+    main {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+    section {
+        margin-bottom: 50px;
+        animation: fadeUp 1s ease-in-out;
+    }
+    section h2 {
+        color: #d35400;
+        border-bottom: 3px solid #ffa500;
+        padding-bottom: 5px;
+    }
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: scale(1.05);
+    }
+    .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    .card-content {
+        padding: 15px;
+    }
+    footer {
+        background: #ffa500;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        margin-top: 40px;
+    }
+    /* Анимации */
+    @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+    }
+    @keyframes fadeUp {
+        from {opacity: 0; transform: translateY(20px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+</style>
 </head>
 <body>
 
 <header>
-    <h1>Мир цитрусовых</h1>
-    <p>Апельсины, лимоны, лаймы и многое другое</p>
+    <h1>🍊 Мир цитрусовых 🍋</h1>
+    <p>Всё о самых вкусных и полезных фруктах планеты</p>
 </header>
 
 <nav>
     <a href="#oranges">Апельсины</a>
     <a href="#lemons">Лимоны</a>
     <a href="#limes">Лаймы</a>
+    <a href="#grapefruit">Грейпфруты</a>
+    <a href="#mandarins">Мандарины</a>
 </nav>
 
 <main>
     <section id="oranges">
         <h2>Апельсины</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Orange-Fruit-Pieces.jpg" alt="Апельсины">
-        <p>Апельсины — сочные и сладкие цитрусовые, богатые витамином C. Они укрепляют иммунитет и улучшают настроение.</p>
+        <p>Апельсины — одни из самых популярных цитрусовых в мире. Они богаты витамином C, антиоксидантами и клетчаткой. Регулярное употребление апельсинов укрепляет иммунитет, улучшает состояние кожи и повышает настроение.</p>
+        <div class="gallery">
+            <div class="card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Orange-Fruit-Pieces.jpg" alt="Апельсины">
+                <div class="card-content">
+                    <h3>Сочные дольки</h3>
+                    <p>Идеальны для свежевыжатого сока и фруктовых салатов.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Orange_and_cross_section.jpg" alt="Апельсин">
+                <div class="card-content">
+                    <h3>Свежий апельсин</h3>
+                    <p>Сладкий вкус и аромат — символ солнечного лета.</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section id="lemons">
         <h2>Лимоны</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Lemon.jpg" alt="Лимоны">
-        <p>Лимоны известны своим кислым вкусом и освежающим ароматом. Их часто используют в кулинарии и напитках.</p>
+        <p>Лимоны известны своим кислым вкусом и освежающим ароматом. Они помогают в детоксикации организма, улучшают пищеварение и придают бодрость. Лимонная вода — популярный напиток для здоровья.</p>
+        <div class="gallery">
+            <div class="card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Lemon.jpg" alt="Лимон">
+                <div class="card-content">
+                    <h3>Классический лимон</h3>
+                    <p>Используется в кулинарии, напитках и косметике.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Lemon_Slices.jpg" alt="Дольки лимона">
+                <div class="card-content">
+                    <h3>Дольки лимона</h3>
+                    <p>Отлично подходят для чая и освежающих коктейлей.</p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section id="limes">
         <h2>Лаймы</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Limes.jpg" alt="Лаймы">
-        <p>Лаймы — маленькие зелёные цитрусовые с ярким вкусом. Отлично подходят для коктейлей и маринадов.</p>
-    </section>
-</main>
-
-<footer>
-    &copy; 2026 Мир цитрусовых
-</footer>
-
-</body>
-</html>
+        <p>Лаймы — маленькие зелёные цитрусовые с ярким вкусом. Они богаты витамином C и придают блюдам особую пикантность. Лайм часто используется в мексиканской и азиатской кухне.</p>
+        <div class="gallery">
+            <div class="card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Limes.jpg" alt="Лаймы">
+                <div class="card-content">
