@@ -1,155 +1,324 @@
-// ═══════════════════════════════════════════
-//   AETHON — Серверный скрипт
-//   Стек: Node.js + Socket.io + Express
-//   Запуск: node server.js
-// ═══════════════════════════════════════════
+/**
+ * ВОЛНА — Бэкенд сервер
+ * Запуск: node server.js
+ * Порт: 3001
+ *
+ * Требования: Node.js 14+
+ * Установка зависимостей: npm install express cors bcryptjs jsonwebtoken
+ */
 
 const express = require('express');
-const http    = require('http');
-const { Server } = require('socket.io');
-const path    = require('path');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const app    = express();
-const server = http.createServer(app);
-const io     = new Server(server, {
-  cors: { origin: '*' }
-});
+const app = express();
+const PORT = 3001;
+const DB_FILE = path.join(__dirname, 'db.json');
+const JWT_SECRET = 'volna_secret_key_change_in_production';
 
-const PORT = process.env.PORT || 3000;
-
-// ─── Статические файлы (отдаём index.html) ───
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 app.use(express.json());
+// Отдаём index.html статически
+app.use(express.static(__dirname));
 
-// ─── Хранилище состояния ───
-const worlds = {
-  'main-plaza':   { name: 'Главная площадь', players: {} },
-  'aethon-forest':{ name: 'Лес Этона',       players: {} },
-  'sky-parkour':  { name: 'Небесный паркур', players: {} },
-  'volcano-isle': { name: 'Остров вулкана',  players: {} },
-};
-
-const players = {}; // socket.id → { id, username, world, x, y, z, coins }
-
-// ─── REST: список миров ───
-app.get('/api/worlds', (req, res) => {
-  const list = Object.entries(worlds).map(([id, w]) => ({
-    id,
-    name:       w.name,
-    playerCount: Object.keys(w.players).length,
-  }));
-  res.json(list);
-});
-
-// ─── REST: статус сервера ───
-app.get('/api/status', (req, res) => {
-  res.json({
-    online:  Object.keys(players).length,
-    worlds:  Object.keys(worlds).length,
-    uptime:  Math.floor(process.uptime()),
-  });
-});
-
-// ─── Socket.io: подключение ───
-io.on('connection', (socket) => {
-  console.log(`[+] Подключился: ${socket.id}`);
-
-  // Игрок входит в платформу
-  socket.on('player:join', ({ username }) => {
-    players[socket.id] = {
-      id:       socket.id,
-      username: username || `Игрок_${socket.id.slice(0, 4)}`,
-      world:    null,
-      x: 0, y: 0, z: 0,
-      coins:    0,
+// ════════════════════════════════════
+// БД — простой JSON-файл
+// ════════════════════════════════════
+function readDB() {
+  if (!fs.existsSync(DB_FILE)) {
+    const initial = {
+      users: [
+        { id: 1, username: 'alex', name: 'Алекс Волков', passwordHash: bcrypt.hashSync('1234', 10), bio: 'Разработчик 🚀 Люблю кофе и открытый код.', following: [2, 3] },
+        { id: 2, username: 'masha', name: 'Маша Иванова', passwordHash: bcrypt.hashSync('1234', 10), bio: 'Дизайнер ✨ Рисую миры из пикселей.', following: [1] },
+        { id: 3, username: 'dima', name: 'Дима Петров', passwordHash: bcrypt.hashSync('1234', 10), bio: 'Музыкант 🎸', following: [] },
+        { id: 4, username: 'katya', name: 'Катя Смирнова', passwordHash: bcrypt.hashSync('1234', 10), bio: 'Путешественница 🌍', following: [1, 2] },
+      ],
+      posts: [
+        { id: 1, userId: 2, text: 'Только что закончила новый проект — UI для финтек-стартапа. Когда дизайн и функционал встречаются — это магия! ✨', time: '2024-01-15T10:00:00Z', likes: [], comments: [{ userId: 1, text: 'Потрясающе! Покажи, когда запустят 🔥', time: '2024-01-15T10:05:00Z' }] },
+        { id: 2, userId: 3, text: 'Записал новый трек сегодня ночью. Иногда лучшие идеи приходят в 3 часа ночи 🌙🎸', time: '2024-01-15T05:00:00Z', likes: [1], comments: [] },
+        { id: 3, userId: 4, text: 'Стамбул — это отдельная вселенная. Успела попробовать 12 видов турецкого завтрака за 2 дня 🥙', time: '2024-01-14T12:00:00Z', likes: [1, 2, 3], comments: [{ userId: 2, text: 'Завидую! 😍', time: '2024-01-14T13:00:00Z' }] },
+      ],
+      messages: {
+        '1-2': [
+          { from: 2, text: 'Привет! Ты видел мой новый проект?', time: '2024-01-15T10:31:00Z' },
+          { from: 1, text: 'Да, это огонь! Как долго работала?', time: '2024-01-15T10:33:00Z' },
+        ],
+        '1-3': [
+          { from: 3, text: 'Слушай, можешь помочь с одним вопросом?', time: '2024-01-14T20:00:00Z' },
+        ]
+      },
+      nextId: 10
     };
-    socket.emit('player:joined', players[socket.id]);
-    console.log(`[JOIN] ${players[socket.id].username}`);
-  });
+    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
+    return initial;
+  }
+  return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+}
 
-  // Игрок входит в мир
-  socket.on('world:enter', ({ worldId }) => {
-    const player = players[socket.id];
-    if (!player || !worlds[worldId]) return;
+function writeDB(db) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+}
 
-    // Покинуть старый мир
-    if (player.world) {
-      socket.leave(player.world);
-      delete worlds[player.world].players[socket.id];
-      socket.to(player.world).emit('world:playerLeft', { id: socket.id });
-    }
+// ════════════════════════════════════
+// MIDDLEWARE — проверка токена
+// ════════════════════════════════════
+function auth(req, res, next) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Нет токена' });
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: 'Токен недействителен' });
+  }
+}
 
-    // Войти в новый мир
-    player.world = worldId;
-    player.x = 0; player.y = 0; player.z = 0;
-    worlds[worldId].players[socket.id] = player;
-    socket.join(worldId);
+// ════════════════════════════════════
+// УТИЛИТЫ
+// ════════════════════════════════════
+function safeUser(u) {
+  const { passwordHash, ...safe } = u;
+  return safe;
+}
 
-    // Отправить текущих игроков в мире
-    socket.emit('world:entered', {
-      worldId,
-      players: Object.values(worlds[worldId].players),
-    });
+function formatTime(isoStr) {
+  const d = new Date(isoStr);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'только что';
+  if (diff < 3600) return `${Math.floor(diff / 60)}м назад`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}ч назад`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}д назад`;
+  return d.toLocaleDateString('ru');
+}
 
-    // Оповестить остальных
-    socket.to(worldId).emit('world:playerEntered', player);
-    console.log(`[WORLD] ${player.username} → ${worlds[worldId].name}`);
-  });
+function chatKey(id1, id2) {
+  return [id1, id2].sort((a, b) => a - b).join('-');
+}
 
-  // Обновление позиции игрока
-  socket.on('player:move', ({ x, y, z }) => {
-    const player = players[socket.id];
-    if (!player || !player.world) return;
+// ════════════════════════════════════
+// AUTH ROUTES
+// ════════════════════════════════════
 
-    player.x = x;
-    player.y = y;
-    player.z = z;
+// POST /api/register
+app.post('/api/register', (req, res) => {
+  const { username, name, password } = req.body;
+  if (!username || !name || !password) return res.status(400).json({ error: 'Заполни все поля' });
+  if (password.length < 4) return res.status(400).json({ error: 'Пароль минимум 4 символа' });
 
-    socket.to(player.world).emit('player:moved', {
-      id: socket.id,
-      x, y, z,
-    });
-  });
+  const db = readDB();
+  if (db.users.find(u => u.username === username)) {
+    return res.status(400).json({ error: 'Это имя уже занято' });
+  }
 
-  // Чат в мире
-  socket.on('chat:message', ({ text }) => {
-    const player = players[socket.id];
-    if (!player || !player.world) return;
-    if (!text || text.trim().length === 0) return;
+  const newUser = {
+    id: db.nextId++,
+    username,
+    name,
+    passwordHash: bcrypt.hashSync(password, 10),
+    bio: '',
+    following: []
+  };
+  db.users.push(newUser);
+  writeDB(db);
 
-    io.to(player.world).emit('chat:message', {
-      from:      player.username,
-      text:      text.slice(0, 200),
-      timestamp: Date.now(),
-    });
-  });
+  const token = jwt.sign({ id: newUser.id }, JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token, user: safeUser(newUser) });
+});
 
-  // Начисление монет (например, за задание)
-  socket.on('coins:earn', ({ amount }) => {
-    const player = players[socket.id];
-    if (!player) return;
-    player.coins += Math.min(amount, 1000); // защита от читов
-    socket.emit('coins:updated', { coins: player.coins });
-  });
+// POST /api/login
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  const db = readDB();
+  const user = db.users.find(u => u.username === username);
+  if (!user || !bcrypt.compareSync(password, user.passwordHash)) {
+    return res.status(401).json({ error: 'Неверный логин или пароль' });
+  }
+  const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token, user: safeUser(user) });
+});
 
-  // Отключение
-  socket.on('disconnect', () => {
-    const player = players[socket.id];
-    if (player) {
-      if (player.world && worlds[player.world]) {
-        delete worlds[player.world].players[socket.id];
-        socket.to(player.world).emit('world:playerLeft', { id: socket.id });
-      }
-      console.log(`[-] Отключился: ${player.username}`);
-      delete players[socket.id];
-    }
+// GET /api/me
+app.get('/api/me', auth, (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+  res.json(safeUser(user));
+});
+
+// ════════════════════════════════════
+// USERS ROUTES
+// ════════════════════════════════════
+
+// GET /api/users — все пользователи (кроме паролей)
+app.get('/api/users', auth, (req, res) => {
+  const db = readDB();
+  res.json(db.users.map(safeUser));
+});
+
+// PATCH /api/users/me — обновить профиль
+app.patch('/api/users/me', auth, (req, res) => {
+  const { name, bio } = req.body;
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ error: 'Не найден' });
+  if (name) user.name = name;
+  if (bio !== undefined) user.bio = bio;
+  writeDB(db);
+  res.json(safeUser(user));
+});
+
+// POST /api/users/:id/follow — подписаться / отписаться
+app.post('/api/users/:id/follow', auth, (req, res) => {
+  const targetId = parseInt(req.params.id);
+  const db = readDB();
+  const me = db.users.find(u => u.id === req.user.id);
+  if (!me) return res.status(404).json({ error: 'Не найден' });
+  if (!me.following) me.following = [];
+  const idx = me.following.indexOf(targetId);
+  if (idx === -1) { me.following.push(targetId); }
+  else { me.following.splice(idx, 1); }
+  writeDB(db);
+  res.json({ following: me.following });
+});
+
+// ════════════════════════════════════
+// POSTS ROUTES
+// ════════════════════════════════════
+
+// GET /api/posts — лента
+app.get('/api/posts', auth, (req, res) => {
+  const db = readDB();
+  const me = db.users.find(u => u.id === req.user.id);
+  const visible = db.posts.filter(p => p.userId === me.id || (me.following || []).includes(p.userId));
+  const result = [...visible].reverse().map(p => ({
+    ...p,
+    timeFormatted: formatTime(p.time)
+  }));
+  res.json(result);
+});
+
+// GET /api/posts/user/:id — посты пользователя
+app.get('/api/posts/user/:id', auth, (req, res) => {
+  const db = readDB();
+  const uid = parseInt(req.params.id);
+  const posts = db.posts.filter(p => p.userId === uid).reverse().map(p => ({
+    ...p,
+    timeFormatted: formatTime(p.time)
+  }));
+  res.json(posts);
+});
+
+// POST /api/posts — создать пост
+app.post('/api/posts', auth, (req, res) => {
+  const { text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'Текст пуст' });
+  const db = readDB();
+  const post = {
+    id: db.nextId++,
+    userId: req.user.id,
+    text: text.trim(),
+    time: new Date().toISOString(),
+    likes: [],
+    comments: []
+  };
+  db.posts.push(post);
+  writeDB(db);
+  res.json({ ...post, timeFormatted: 'только что' });
+});
+
+// POST /api/posts/:id/like — лайк / убрать лайк
+app.post('/api/posts/:id/like', auth, (req, res) => {
+  const pid = parseInt(req.params.id);
+  const db = readDB();
+  const post = db.posts.find(p => p.id === pid);
+  if (!post) return res.status(404).json({ error: 'Пост не найден' });
+  const idx = post.likes.indexOf(req.user.id);
+  if (idx === -1) { post.likes.push(req.user.id); }
+  else { post.likes.splice(idx, 1); }
+  writeDB(db);
+  res.json({ likes: post.likes });
+});
+
+// POST /api/posts/:id/comment — добавить комментарий
+app.post('/api/posts/:id/comment', auth, (req, res) => {
+  const pid = parseInt(req.params.id);
+  const { text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'Текст пуст' });
+  const db = readDB();
+  const post = db.posts.find(p => p.id === pid);
+  if (!post) return res.status(404).json({ error: 'Пост не найден' });
+  const comment = { userId: req.user.id, text: text.trim(), time: new Date().toISOString() };
+  post.comments.push(comment);
+  writeDB(db);
+  res.json(comment);
+});
+
+// ════════════════════════════════════
+// MESSAGES ROUTES
+// ════════════════════════════════════
+
+// GET /api/messages/:userId — получить чат с пользователем
+app.get('/api/messages/:userId', auth, (req, res) => {
+  const otherId = parseInt(req.params.userId);
+  const key = chatKey(req.user.id, otherId);
+  const db = readDB();
+  const msgs = (db.messages[key] || []).map(m => ({
+    ...m,
+    timeFormatted: new Date(m.time).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
+  }));
+  res.json(msgs);
+});
+
+// POST /api/messages/:userId — отправить сообщение
+app.post('/api/messages/:userId', auth, (req, res) => {
+  const otherId = parseInt(req.params.userId);
+  const { text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'Пусто' });
+  const key = chatKey(req.user.id, otherId);
+  const db = readDB();
+  if (!db.messages[key]) db.messages[key] = [];
+  const msg = { from: req.user.id, text: text.trim(), time: new Date().toISOString() };
+  db.messages[key].push(msg);
+  writeDB(db);
+  const now = new Date();
+  res.json({
+    ...msg,
+    timeFormatted: now.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
   });
 });
 
-// ─── Запуск ───
-server.listen(PORT, () => {
-  console.log(`\n  ╔═══════════════════════════╗`);
-  console.log(`  ║   AETHON сервер запущен   ║`);
-  console.log(`  ║   http://localhost:${PORT}    ║`);
-  console.log(`  ╚═══════════════════════════╝\n`);
+// GET /api/messages — список последних чатов
+app.get('/api/messages', auth, (req, res) => {
+  const db = readDB();
+  const myId = req.user.id;
+  const convos = [];
+  for (const [key, msgs] of Object.entries(db.messages)) {
+    const ids = key.split('-').map(Number);
+    if (!ids.includes(myId)) continue;
+    const otherId = ids.find(id => id !== myId);
+    const other = db.users.find(u => u.id === otherId);
+    if (!other) continue;
+    const last = msgs.length ? msgs[msgs.length - 1] : null;
+    convos.push({
+      userId: otherId,
+      name: other.name,
+      username: other.username,
+      lastMessage: last ? last.text : '',
+      lastTime: last ? last.time : ''
+    });
+  }
+  res.json(convos);
+});
+
+// ════════════════════════════════════
+// ЗАПУСК
+// ════════════════════════════════════
+app.listen(PORT, () => {
+  console.log(`\n✦ Волна — сервер запущен на http://localhost:${PORT}`);
+  console.log(`  Открой в браузере: http://localhost:${PORT}/index.html`);
+  console.log(`  API доступно на:   http://localhost:${PORT}/api/\n`);
 });
