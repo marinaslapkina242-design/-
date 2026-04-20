@@ -289,9 +289,9 @@
     font-size: 0.88rem;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, box-shadow 0.2s;
   }
-  .btn-accent:hover { opacity: 0.88; }
+  .btn-accent:hover { opacity: 0.88; box-shadow: 0 4px 16px rgba(124,92,252,0.4); }
 
   .post-card {
     background: var(--surface);
@@ -300,7 +300,9 @@
     padding: 1.2rem 1.5rem;
     margin-bottom: 1rem;
     animation: fadeIn 0.3s ease;
+    transition: border-color 0.2s, transform 0.15s;
   }
+  .post-card:hover { border-color: var(--border2); transform: translateY(-1px); }
   @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
   .post-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; }
   .post-meta { flex: 1; }
@@ -340,61 +342,153 @@
 
   /* ── PROFILE ── */
   .profile-banner {
-    height: 160px;
-    background: linear-gradient(135deg, rgba(124,92,252,0.5), rgba(192,132,252,0.3));
+    height: 180px;
     border-radius: var(--r2);
-    margin-bottom: -50px;
+    margin-bottom: -60px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
   }
+  .profile-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(13,13,18,0.6) 100%);
+  }
+  .banner-gradient-0 { background: linear-gradient(135deg, #7c5cfc 0%, #c084fc 50%, #38bdf8 100%); }
+  .banner-gradient-1 { background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #7c5cfc 100%); }
+  .banner-gradient-2 { background: linear-gradient(135deg, #4ade80 0%, #38bdf8 50%, #7c5cfc 100%); }
+  .banner-gradient-3 { background: linear-gradient(135deg, #fbbf24 0%, #fc5c7d 50%, #c084fc 100%); }
+  .banner-gradient-4 { background: linear-gradient(135deg, #38bdf8 0%, #4ade80 50%, #fbbf24 100%); }
+  .banner-change-btn {
+    position: absolute; bottom: 10px; right: 12px; z-index: 2;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+    padding: 0.3rem 0.75rem; color: #fff; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; font-family: 'Manrope', sans-serif;
+    transition: background 0.15s;
+  }
+  .banner-change-btn:hover { background: rgba(0,0,0,0.65); }
+
   .profile-info-row {
     display: flex; align-items: flex-end; gap: 1rem;
     padding: 0 1.5rem; margin-bottom: 1.2rem;
   }
   .profile-avatar-wrap { position: relative; }
   .profile-avatar-wrap .avatar {
-    width: 90px; height: 90px; font-size: 2rem;
-    border: 3px solid var(--bg);
+    width: 96px; height: 96px; font-size: 2.2rem;
+    border: 4px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--border2), 0 8px 32px rgba(124,92,252,0.25);
+  }
+  .profile-verified {
+    position: absolute; bottom: 2px; right: 2px;
+    width: 22px; height: 22px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: #fff;
   }
   .profile-names { flex: 1; padding-bottom: 0.5rem; }
-  .profile-name { font-size: 1.3rem; font-weight: 700; }
+  .profile-name { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
   .profile-handle { font-size: 0.88rem; color: var(--text3); margin-top: 0.2rem; }
-  .profile-bio { font-size: 0.92rem; color: var(--text2); margin-top: 0.4rem; }
-  .profile-stats { display: flex; gap: 2rem; padding: 0 1.5rem; margin-bottom: 1.5rem; }
-  .stat-item { text-align: center; }
-  .stat-num { font-size: 1.2rem; font-weight: 700; color: var(--text); }
-  .stat-label { font-size: 0.78rem; color: var(--text3); margin-top: 0.1rem; }
+  .profile-bio { font-size: 0.93rem; color: var(--text2); margin-top: 0.5rem; line-height: 1.55; max-width: 400px; }
+
+  .profile-meta-row {
+    display: flex; gap: 1.2rem; align-items: center;
+    padding: 0 1.5rem; margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .profile-meta-item {
+    display: flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; color: var(--text3);
+  }
+  .profile-meta-item span { font-size: 0.9rem; }
+
+  .profile-interests {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    padding: 0 1.5rem; margin-bottom: 1.5rem;
+  }
+  .interest-tag {
+    background: var(--accent-glow); border: 1px solid rgba(124,92,252,0.25);
+    border-radius: 999px; padding: 0.28rem 0.85rem;
+    font-size: 0.78rem; color: var(--accent2); font-weight: 600;
+    cursor: default;
+  }
+
+  .profile-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem; padding: 0 1.5rem; margin-bottom: 1.5rem;
+  }
+  .stat-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 1rem; text-align: center;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+  .stat-item:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--text); font-family: 'Unbounded', sans-serif; }
+  .stat-label { font-size: 0.75rem; color: var(--text3); margin-top: 0.3rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .stat-icon { font-size: 1.1rem; margin-bottom: 0.3rem; }
+
   .profile-edit-btn {
     background: none; border: 1px solid var(--border2); border-radius: var(--r);
-    padding: 0.45rem 1.2rem; color: var(--text2); font-family: 'Manrope', sans-serif;
+    padding: 0.5rem 1.3rem; color: var(--text2); font-family: 'Manrope', sans-serif;
     font-size: 0.88rem; font-weight: 600; cursor: pointer;
     align-self: flex-end; margin-bottom: 0.5rem;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    display: flex; align-items: center; gap: 0.4rem;
   }
-  .profile-edit-btn:hover { background: var(--surface2); color: var(--text); }
+  .profile-edit-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+
+  .profile-posts-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 0 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+  }
+  .profile-posts-title { font-size: 0.95rem; font-weight: 700; color: var(--text); font-family: 'Unbounded', sans-serif; }
+  .profile-posts-count { font-size: 0.8rem; color: var(--text3); background: var(--surface2); padding: 0.2rem 0.6rem; border-radius: 999px; }
 
   /* edit modal */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); z-index: 200;
+    background: rgba(0,0,0,0.75); z-index: 200;
     align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
   }
   .modal-overlay.open { display: flex; }
   .modal-box {
     background: var(--surface); border: 1px solid var(--border2);
-    border-radius: var(--r3); padding: 2rem; width: 420px; max-width: 95vw;
+    border-radius: var(--r3); padding: 2rem; width: 460px; max-width: 95vw;
     animation: modalIn 0.2s ease;
+    max-height: 90vh; overflow-y: auto;
   }
   @keyframes modalIn { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: none; } }
-  .modal-title { font-size: 1.1rem; margin-bottom: 1.5rem; }
+  .modal-title { font-size: 1.1rem; margin-bottom: 0.4rem; }
+  .modal-subtitle { font-size: 0.82rem; color: var(--text3); margin-bottom: 1.5rem; }
   .modal-field { margin-bottom: 1rem; }
-  .modal-field label { display: block; font-size: 0.8rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+  .modal-field label { display: block; font-size: 0.78rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
   .modal-field input, .modal-field textarea {
     width: 100%; background: var(--surface2); border: 1px solid var(--border2);
     border-radius: var(--r); padding: 0.7rem 1rem; color: var(--text);
     font-family: 'Manrope', sans-serif; font-size: 0.92rem; outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .modal-field textarea { resize: vertical; min-height: 70px; }
-  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); }
+  .modal-field textarea { resize: vertical; min-height: 80px; }
+  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .modal-field .input-hint { font-size: 0.75rem; color: var(--text3); margin-top: 0.3rem; }
+  .modal-banner-row {
+    display: flex; gap: 0.6rem; margin-top: 0.5rem;
+  }
+  .banner-swatch {
+    width: 40px; height: 24px; border-radius: 6px; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s;
+  }
+  .banner-swatch:hover { transform: scale(1.08); }
+  .banner-swatch.active { border-color: #fff; }
+  .banner-swatch-0 { background: linear-gradient(135deg, #7c5cfc, #c084fc, #38bdf8); }
+  .banner-swatch-1 { background: linear-gradient(135deg, #f472b6, #c084fc, #7c5cfc); }
+  .banner-swatch-2 { background: linear-gradient(135deg, #4ade80, #38bdf8, #7c5cfc); }
+  .banner-swatch-3 { background: linear-gradient(135deg, #fbbf24, #fc5c7d, #c084fc); }
+  .banner-swatch-4 { background: linear-gradient(135deg, #38bdf8, #4ade80, #fbbf24); }
   .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
 
   /* ── MESSAGES ── */
@@ -595,24 +689,47 @@
 
     <!-- PROFILE -->
     <div id="section-profile" class="section">
-      <div class="profile-banner"></div>
+      <div class="profile-banner banner-gradient-0" id="prof-banner">
+        <button class="banner-change-btn" onclick="cycleBanner()">🎨 Сменить обложку</button>
+      </div>
       <div class="profile-info-row">
         <div class="profile-avatar-wrap">
-          <div class="avatar" id="prof-avatar" style="width:90px;height:90px;font-size:2rem;"></div>
+          <div class="avatar" id="prof-avatar" style="width:96px;height:96px;font-size:2.2rem;"></div>
+          <div class="profile-verified" title="Участник Волны">✓</div>
         </div>
         <div class="profile-names">
-          <div class="profile-name" id="prof-name"></div>
+          <div class="profile-name"><span id="prof-name"></span></div>
           <div class="profile-handle" id="prof-handle"></div>
           <div class="profile-bio" id="prof-bio"></div>
         </div>
-        <button class="profile-edit-btn" onclick="openEditModal()">✏ Редактировать</button>
+        <button class="profile-edit-btn" onclick="openEditModal()"><span>✏</span> Редактировать</button>
       </div>
+      <div class="profile-meta-row">
+        <div class="profile-meta-item"><span>📅</span> <span id="prof-joined">—</span></div>
+        <div class="profile-meta-item"><span>🌊</span> <span>Волна</span></div>
+      </div>
+      <div class="profile-interests" id="prof-interests"></div>
       <div class="profile-stats">
-        <div class="stat-item"><div class="stat-num" id="prof-posts">0</div><div class="stat-label">постов</div></div>
-        <div class="stat-item"><div class="stat-num" id="prof-friends">0</div><div class="stat-label">друзей</div></div>
-        <div class="stat-item"><div class="stat-num" id="prof-likes">0</div><div class="stat-label">лайков</div></div>
+        <div class="stat-item">
+          <div class="stat-icon">📝</div>
+          <div class="stat-num" id="prof-posts">0</div>
+          <div class="stat-label">постов</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">👥</div>
+          <div class="stat-num" id="prof-friends">0</div>
+          <div class="stat-label">подписок</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">❤️</div>
+          <div class="stat-num" id="prof-likes">0</div>
+          <div class="stat-label">лайков</div>
+        </div>
       </div>
-      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">Мои посты</div>
+      <div class="profile-posts-header">
+        <div class="profile-posts-title">Публикации</div>
+        <div class="profile-posts-count" id="prof-posts-badge">0 постов</div>
+      </div>
       <div id="my-posts-container"></div>
     </div>
 
@@ -651,13 +768,33 @@
 <div class="modal-overlay" id="edit-modal">
   <div class="modal-box">
     <h3 class="modal-title">Редактировать профиль</h3>
+    <p class="modal-subtitle">Расскажи о себе — это видят все</p>
     <div class="modal-field">
       <label>Имя</label>
-      <input id="edit-name" type="text">
+      <input id="edit-name" type="text" placeholder="Как тебя зовут?">
+    </div>
+    <div class="modal-field">
+      <label>Имя пользователя</label>
+      <input id="edit-username" type="text" placeholder="@username">
+      <div class="input-hint">Только латинские буквы, цифры и _</div>
     </div>
     <div class="modal-field">
       <label>О себе</label>
-      <textarea id="edit-bio" rows="3" placeholder="Расскажи о себе..."></textarea>
+      <textarea id="edit-bio" rows="3" placeholder="Чем занимаешься, что тебя вдохновляет..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label>Интересы <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(через запятую)</span></label>
+      <input id="edit-interests" type="text" placeholder="музыка, код, путешествия...">
+    </div>
+    <div class="modal-field">
+      <label>Цвет обложки</label>
+      <div class="modal-banner-row" id="banner-swatches">
+        <div class="banner-swatch banner-swatch-0" onclick="selectBanner(0)"></div>
+        <div class="banner-swatch banner-swatch-1" onclick="selectBanner(1)"></div>
+        <div class="banner-swatch banner-swatch-2" onclick="selectBanner(2)"></div>
+        <div class="banner-swatch banner-swatch-3" onclick="selectBanner(3)"></div>
+        <div class="banner-swatch banner-swatch-4" onclick="selectBanner(4)"></div>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeEditModal()">Отмена</button>
@@ -672,15 +809,13 @@
 // ═══════════════════════════════════
 let state = {
   users: [
-    { id: 1, username: 'alex', name: 'Алекс Волков', password: '1234', bio: 'Разработчик 🚀 Люблю кофе и открытый код.', following: [2,3] },
-    { id: 2, username: 'masha', name: 'Маша Иванова', password: '1234', bio: 'Дизайнер ✨ Рисую миры из пикселей.', following: [1] },
-    { id: 3, username: 'dima', name: 'Дима Петров', password: '1234', bio: 'Музыкант 🎸', following: [] },
-    { id: 4, username: 'katya', name: 'Катя Смирнова', password: '1234', bio: 'Путешественница 🌍', following: [1,2] },
+    { id: 1, username: 'alex', name: 'Алекс Волков', password: '1234', bio: 'Разработчик 🚀 Люблю кофе и открытый код.', following: [2,3], interests: ['код','кофе','опенсорс'], joined: 'апрель 2024', bannerColor: 0 },
+    { id: 2, username: 'masha', name: 'Маша Иванова', password: '1234', bio: 'Дизайнер ✨ Рисую миры из пикселей.', following: [1], interests: ['дизайн','ui','арт'], joined: 'январь 2024', bannerColor: 1 },
+    { id: 3, username: 'dima', name: 'Дима Петров', password: '1234', bio: 'Музыкант 🎸', following: [], interests: ['музыка','гитара','рок'], joined: 'март 2024', bannerColor: 2 },
   ],
   posts: [
     { id: 1, userId: 2, text: 'Только что закончила новый проект — UI для финтек-стартапа. Когда дизайн и функционал встречаются — это магия! ✨', time: '2ч назад', likes: [], comments: [{ userId: 1, text: 'Потрясающе! Покажи, когда запустят 🔥' }] },
     { id: 2, userId: 3, text: 'Записал новый трек сегодня ночью. Иногда лучшие идеи приходят в 3 часа ночи 🌙🎸', time: '5ч назад', likes: [1], comments: [] },
-    { id: 3, userId: 4, text: 'Стамбул — это отдельная вселенная. Успела попробовать 12 видов турецкого завтрака за 2 дня 🥙', time: '1д назад', likes: [1,2,3], comments: [{ userId: 2, text: 'Завидую! 😍' }] },
   ],
   messages: {
     '1-2': [
@@ -727,7 +862,10 @@ function doRegister(e) {
   if (!name || !user || !pass) { document.getElementById('reg-err').textContent = 'Заполни все поля'; return; }
   if (pass.length < 4) { document.getElementById('reg-err').textContent = 'Пароль минимум 4 символа'; return; }
   if (state.users.find(u => u.username === user)) { document.getElementById('reg-err').textContent = 'Это имя занято'; return; }
-  const newUser = { id: Date.now(), username: user, name, password: pass, bio: '', following: [] };
+  const now = new Date();
+  const months = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+  const joinedStr = months[now.getMonth()] + ' ' + now.getFullYear();
+  const newUser = { id: Date.now(), username: user, name, password: pass, bio: '', following: [], interests: [], joined: joinedStr, bannerColor: 0 };
   state.users.push(newUser);
   state.currentUser = newUser.id;
   save();
@@ -902,35 +1040,82 @@ function renderProfile() {
   document.getElementById('prof-name').textContent = me.name;
   document.getElementById('prof-handle').textContent = '@' + me.username;
   document.getElementById('prof-bio').textContent = me.bio || 'Расскажи о себе...';
+  document.getElementById('prof-joined').textContent = 'На Волне с ' + (me.joined || 'недавно');
+
+  // banner
+  const banner = document.getElementById('prof-banner');
+  if (banner) {
+    banner.className = 'profile-banner banner-gradient-' + (me.bannerColor ?? 0);
+    const btn = banner.querySelector('.banner-change-btn');
+    if (btn) banner.appendChild(btn);
+  }
+
+  // interests
+  const interestsEl = document.getElementById('prof-interests');
+  if (interestsEl) {
+    const tags = me.interests || [];
+    interestsEl.innerHTML = tags.map(t => `<div class="interest-tag">#${t}</div>`).join('');
+  }
+
   const myPosts = state.posts.filter(p => p.userId === me.id);
   document.getElementById('prof-posts').textContent = myPosts.length;
   document.getElementById('prof-friends').textContent = (me.following||[]).length;
   const totalLikes = myPosts.reduce((s,p)=>s+p.likes.length,0);
   document.getElementById('prof-likes').textContent = totalLikes;
+  const badge = document.getElementById('prof-posts-badge');
+  if (badge) badge.textContent = myPosts.length + ' ' + (myPosts.length===1?'пост': myPosts.length<5?'поста':'постов');
   const c = document.getElementById('my-posts-container');
-  c.innerHTML = [...myPosts].reverse().map(p => postHTML(p)).join('') || '<p style="color:var(--text3);padding:1rem">Ты ещё ничего не публиковал</p>';
+  c.innerHTML = [...myPosts].reverse().map(p => postHTML(p)).join('') || '<p style="color:var(--text3);padding:1rem;text-align:center">Ты ещё ничего не публиковал</p>';
   attachPostEvents();
 }
+
+let _pendingBanner = null;
 
 function openEditModal() {
   const me = getMe();
   document.getElementById('edit-name').value = me.name;
+  document.getElementById('edit-username').value = me.username;
   document.getElementById('edit-bio').value = me.bio || '';
+  document.getElementById('edit-interests').value = (me.interests||[]).join(', ');
+  _pendingBanner = me.bannerColor ?? 0;
+  updateSwatchUI(_pendingBanner);
   document.getElementById('edit-modal').classList.add('open');
 }
-function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); }
+function closeEditModal() { document.getElementById('edit-modal').classList.remove('open'); _pendingBanner = null; }
+function selectBanner(idx) {
+  _pendingBanner = idx;
+  updateSwatchUI(idx);
+}
+function updateSwatchUI(idx) {
+  document.querySelectorAll('.banner-swatch').forEach((s,i) => s.classList.toggle('active', i===idx));
+}
+function cycleBanner() {
+  const me = state.users.find(u=>u.id===state.currentUser);
+  me.bannerColor = ((me.bannerColor ?? 0) + 1) % 5;
+  save();
+  renderProfile();
+}
 function saveProfile() {
   const name = document.getElementById('edit-name').value.trim();
+  const usernameRaw = document.getElementById('edit-username').value.trim().replace('@','');
   const bio = document.getElementById('edit-bio').value.trim();
+  const interestsRaw = document.getElementById('edit-interests').value;
   if (!name) return;
+  if (!/^[a-zA-Z0-9_]+$/.test(usernameRaw)) { toast('⚠️ Только латиница, цифры и _'); return; }
+  const conflict = state.users.find(u=>u.username===usernameRaw && u.id!==state.currentUser);
+  if (conflict) { toast('⚠️ Это имя занято'); return; }
+  const interests = interestsRaw.split(',').map(s=>s.trim()).filter(Boolean).slice(0,6);
   const me = state.users.find(u=>u.id===state.currentUser);
-  me.name = name; me.bio = bio;
+  me.name = name; me.bio = bio; me.username = usernameRaw; me.interests = interests;
+  if (_pendingBanner !== null) me.bannerColor = _pendingBanner;
+  if (!me.joined) me.joined = 'апрель 2025';
   save();
   closeEditModal();
   renderProfile();
   const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   ['sb-avatar','cp-avatar','prof-avatar'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=initials; });
   document.getElementById('sb-name').textContent = name;
+  document.getElementById('sb-handle').textContent = '@' + usernameRaw;
   toast('✅ Профиль обновлён');
 }
 
