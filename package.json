@@ -1,15 +1,9 @@
 {
-  "name": "volna-server",
+  "name": "volna",
   "version": "1.0.0",
-  "description": "Волна — социальная сеть, бэкенд",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "@supabase/supabase-js": "^2.39.0"
   }
 }
